@@ -10,7 +10,7 @@
     - name: Clone repository
       git:
         repo: "{{ repo_url }}"
-        dest: "{{ angular_app_path }}"
+        dest: "{{ laravel_app_path }}"
         version: "{{ branch }}"
       register: repo
 
