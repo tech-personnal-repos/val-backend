@@ -10,11 +10,12 @@ use App\Models\ChatMessages;
 class HealthController extends Controller
 {
 
-    public function index() {
+    public function index()
+    {
         $output = [
             'hostname' => gethostname(),
         ];
-        
+
         $date_begin = microtime(true);
 
         try {
@@ -34,11 +35,10 @@ class HealthController extends Controller
             Log::error($e);
             $output['mysql'] = 'unhealthy';
         }
-
+        $version = env('APP_VERSION', 'unknown');
         $date_end = microtime(true);
         $output['response_time_ms'] = round(($date_end - $date_begin) * 1000, 1);
 
         return response()->json($output);
     }
-
 }

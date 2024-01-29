@@ -1,0 +1,27 @@
+name: Backend production deploy
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        environment: production
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Run playbook
+              uses: dawidd6/action-ansible-playbook@v2
+
+              with:
+                  playbook: playbook.yml
+                  directory: ./.github/ansible
+                  key: ${{secrets.SSH_KEY}}
+                  inventory: |
+                      [backend]
+                      ${{secrets.HOST}} ansible_user=${{secrets.USER}}
