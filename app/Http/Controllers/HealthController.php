@@ -35,7 +35,7 @@ class HealthController extends Controller
             Log::error($e);
             $output['mysql'] = 'unhealthy';
         }
-        $version = env('APP_VERSION', 'unknown');
+        $output['version'] = env('APP_VERSION', 'unknown');
         $date_end = microtime(true);
         $output['response_time_ms'] = round(($date_end - $date_begin) * 1000, 1);
 

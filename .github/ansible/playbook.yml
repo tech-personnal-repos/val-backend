@@ -13,9 +13,3 @@
         dest: "{{ laravel_app_path }}"
         version: "{{ branch }}"
       register: repo
-
-    - name: "Cache the configuration"
-      shell: "php artisan config:cache"
-      args:
-        chdir: "{{ laravel_app_path }}"
-      when: repo.changed
