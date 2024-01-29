@@ -2,7 +2,7 @@
   hosts: backend
 
   vars:
-    angular_app_path: /var/www/val-backend
+    laravel_app_path: /var/www/val-backend
     repo_url: https://github.com/tech-personnal-repos/val-backend.git
     branch: main
 
