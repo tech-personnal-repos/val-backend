@@ -1,0 +1,32 @@
+- name: Apt update
+  apt:
+    update_cache: yes
+
+- name: Install Laravel
+  apt:
+    name: "{{ item }}"
+  loop:
+    - git
+    - curl
+    - unzip
+    - php{{ laravel_php_version }}
+    - php{{ laravel_php_version }}-cli
+    - php{{ laravel_php_version }}-mbstring
+    - php{{ laravel_php_version }}-xml
+    - php{{ laravel_php_version }}-curl
+    - php{{ laravel_php_version }}-zip
+    - php{{ laravel_php_version }}-fpm
+    - php{{ laravel_php_version }}-mysql
+    - composer
+  register: installed_dependencies
+
+- name: Remove Apache
+  apt:
+    name: "apache2"
+    state: absent
+  when: installed_dependencies.changed
+
+- name: Setup nginx
+  ansible.builtin.import_tasks:
+    file: ./nginx.yml
+  when: installed_dependencies.changed

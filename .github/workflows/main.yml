@@ -1,27 +1,113 @@
-name: Backend production deploy
+name: Production deploy
 
 on:
-    push:
-        branches: ["main"]
-    pull_request:
-        branches: ["main"]
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        environment: production
-        steps:
-            - uses: actions/checkout@v3
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4.1.1
 
-            - name: Run playbook
-              uses: dawidd6/action-ansible-playbook@v2
+      - name: Get package info
+        id: package
+        uses: kylejrp/action-nodejs-package-info@v1.2
 
-              with:
-                  playbook: playbook.yml
-                  directory: ./.github/ansible
-                  key: ${{secrets.SSH_KEY}}
-                  inventory: |
-                      [backend]
-                      ${{secrets.HOST}} ansible_user=${{secrets.USER}}
+      - name: Check Release Existence
+        id: release-existence
+        uses: insightsengineering/release-existence-action@v1.0.0
+        with:
+          release-tag: ${{ steps.package.outputs.version }}
+
+      - name: Create Release
+        if: steps.release-existence.outputs.release-exists == 'false'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.package.outputs.version }}
+          release_name: Release ${{ steps.package.outputs.version }}
+          body: |
+            ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false
+
+  build:
+    runs-on: ubuntu-latest
+    needs: create-release
+    environment: production
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 10
+
+      - name: Install dependencies
+        uses: php-actions/composer@v6
+        with:
+          php_version: "7.4"
+          version: 1
+
+      - name: Get package info
+        id: package
+        uses: kylejrp/action-nodejs-package-info@v1.2
+
+      - name: Zip build folder
+        run: zip -r -j back.zip ./public
+
+      - name: Upload File
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./back.zip
+          tag: ${{ steps.package.outputs.version }}
+          overwrite: true
+#   deploy:
+#     runs-on: ubuntu-latest
+#     needs: build
+#     environment: production
+#     permissions:
+#       contents: write
+#       packages: write
+#       pull-requests: write
+#       issues: write
+#     steps:
+#       - uses: actions/checkout@v4.1.1
+
+#       - name: Get package info
+#         id: package
+#         uses: kylejrp/action-nodejs-package-info@v1.2
+
+#       - name: Deploy with ansible
+#         uses: dawidd6/action-ansible-playbook@v2
+#         env:
+#           ANSIBLE_HOST_KEY_CHECKING: false
+#         with:
+#           playbook: playbook.yml
+#           directory: ./.github/workflows/ansible
+#           key: ${{ secrets.SSH_KEY }}
+#           inventory: |
+#             [backend]
+#             ${{ secrets.HOST }} ansible_user=${{ secrets.USER }}
+#           options: |
+#             --extra-vars db_host=${{ secrets.DB_HOST }}
+#             --extra-vars host=${{ secrets.HOST }}
+#             --extra-vars download_url=https://github.com/tech-personnal-repos/val-backend/releases/download/${{ steps.package.outputs.version }}/back.zip
+#             --extra-vars app_path=${{ secrets.APP_PATH }}

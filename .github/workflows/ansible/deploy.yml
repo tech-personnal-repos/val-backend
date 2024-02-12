@@ -1,0 +1,26 @@
+- name: Get back build
+  ansible.builtin.get_url:
+    url: "{{ download_url }}"
+    dest: /tmp/back.zip
+
+- name: Ensure tmp directory exists
+  ansible.builtin.file:
+    path: /tmp/back
+    state: directory
+
+- name: Unzip back build
+  ansible.builtin.unarchive:
+    src: /tmp/back.zip
+    dest: "/tmp/back"
+    remote_src: yes
+
+- name: Remove old back build
+  ansible.builtin.file:
+    path: "{{ app_path }}"
+    state: absent
+
+- name: Move back build
+  ansible.builtin.copy:
+    src: "/tmp/back/"
+    dest: "{{ app_path }}"
+    remote_src: yes
