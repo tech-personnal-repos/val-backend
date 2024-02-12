@@ -55,6 +55,6 @@
     chdir: "{{ app_path }}"
 
 - name: Remove .env
-ansible.builtin.file:
-  path: "{{ app_path }}/.env"
-  state: absent
+  ansible.builtin.file:
+    path: "{{ app_path }}/.env"
+    state: absent
