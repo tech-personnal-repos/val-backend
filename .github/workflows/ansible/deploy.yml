@@ -63,4 +63,3 @@
   shell: "php artisan migrate --force"
   args:
     chdir: "{{ app_path }}"
-  when: repo.changed
