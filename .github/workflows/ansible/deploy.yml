@@ -47,7 +47,7 @@
     path: "{{ app_path }}/storage"
     owner: www-data
     group: www-data
-    mode: "0644"
+    recurse: yes
 
 - name: Config cache
   ansible.builtin.command: "php artisan config:cache"
