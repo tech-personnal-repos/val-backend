@@ -42,29 +42,9 @@ jobs:
           draft: false
           prerelease: false
 
-  generate_missing_env:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-      pull-requests: write
-      issues: write
-      actions: write
-    environment: production
-    steps:
-      - name: add .env to secrets
-        uses: dacbd/gha-secrets@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          name: "ENV_FILE"
-          value: "APP_NAME=Laravel\nAPP_ENV=local\nAPP_KEY=base64:h55oToUypq1BJwhcBAbtCnKscJGGS7xXF3zoDNf/yWE=\nAPP_DEBUG=true\nAPP_URL=http://${{ secrets.HOST }}\nLOG_CHANNEL=stderr\nDB_CONNECTION=mysql\nDB_HOST=${{ secrets.DB_HOST }}\nDB_PORT=${{ secrets.DB_PORT }}\nDB_DATABASE=${{ secrets.DB_DATABASE }}\nDB_USERNAME=${{ secrets.DB_USERNAME }}\nDB_PASSWORD=password\nBROADCAST_DRIVER=log\nCACHE_DRIVER=file\nQUEUE_CONNECTION=sync\nSESSION_DRIVER=file\nSESSION_LIFETIME=120\n"
-        env:
-          ENV_FILE: ${{ secrets.ENV_FILE }}
-        if: ${{ env.ENV_FILE }} == ''
-
   build:
     runs-on: ubuntu-latest
-    needs: [create-release, generate_missing_env]
+    needs: create-release
     environment: production
     permissions:
       contents: write

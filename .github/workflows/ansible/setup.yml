@@ -2,7 +2,7 @@
   apt:
     update_cache: yes
 
-- name: Install Laravel
+- name: Install dependencies ({{ item }})
   apt:
     name: "{{ item }}"
   loop:
