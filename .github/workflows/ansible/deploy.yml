@@ -58,3 +58,9 @@
   ansible.builtin.file:
     path: "{{ app_path }}/.env"
     state: absent
+
+- name: "Run the migrations"
+  shell: "php artisan migrate --force"
+  args:
+    chdir: "{{ app_path }}"
+  when: repo.changed
