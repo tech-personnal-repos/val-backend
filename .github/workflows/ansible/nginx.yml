@@ -5,7 +5,7 @@
 
 - name: Replace variables in nginx configuration
   replace:
-    path: /etc/nginx/sites-available/front.conf
+    path: /etc/nginx/sites-available/back.conf
     regexp: "{{ item.regexp }}"
     replace: "{{ item.value }}"
   loop:
