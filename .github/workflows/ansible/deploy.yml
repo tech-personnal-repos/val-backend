@@ -27,8 +27,20 @@
 
 - name: Add .env file
   copy:
-    content: "{{ env_file }}"
+    src: "./templates/.env.template"
     dest: "{{ app_path }}/.env"
+
+- name: Replace variables in nginx configuration
+  replace:
+    path: "{{ app_path }}/.env"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.value }}"
+  loop:
+    - { regexp: '\$HOST', value: "{{ host }}" }
+    - { regexp: '\$DB_HOST', value: "{{ db_host }}" }
+    - { regexp: '\$DB_PORT', value: "{{ db_port }}" }
+    - { regexp: '\$DB_DATABASE', value: "{{ db_name }}" }
+    - { regexp: '\$DB_USER', value: "{{ db_user }}" }
 
 - name: Config cache
   ansible.builtin.command: "php artisan config:cache"

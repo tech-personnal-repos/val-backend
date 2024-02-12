@@ -104,8 +104,11 @@ jobs:
             [backend]
             ${{ secrets.HOST }} ansible_user=${{ secrets.USER }}
           options: |
-            --extra-vars db_host="${{ secrets.DB_HOST }}"
             --extra-vars host="${{ secrets.HOST }}"
             --extra-vars download_url="https://github.com/tech-personnal-repos/val-backend/releases/download/${{ steps.package.outputs.version }}/back.zip"
             --extra-vars app_path="${{ secrets.APP_PATH }}"
             --extra-vars env_file="${{ secrets.ENV_FILE }}"
+            --extra-vars db_host="${{ secrets.DB_HOST }}"
+            --extra-vars db_port="${{ secrets.DB_POST }}"
+            --extra-vars db_name="${{ secrets.DB_NAME }}"
+            --extra-vars db_user="${{ secrets.DB_USER }}"
