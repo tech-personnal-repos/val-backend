@@ -53,8 +53,6 @@ jobs:
     steps:
       - id: database_password
         uses: Ba4bes/Password-Generator@v0.1
-        with:
-          length: 15
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
         if: ${{ env.ENV_FILE }} == ''
