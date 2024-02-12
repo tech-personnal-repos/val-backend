@@ -26,10 +26,7 @@
     remote_src: yes
 
 - name: Add .env file
-  ansible.builtin.copy:
-    src: "{{ env_file }}"
-    dest: "{{ app_path }}/.env"
-    remote_src: yes
+  shell: "echo '{{ env }}' > {{ app_path }}/.env"
 
 - name: Config cache
   ansible.builtin.command: "php artisan config:cache"
