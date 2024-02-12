@@ -60,8 +60,9 @@ jobs:
         if: ${{ env.ENV_FILE }} == ''
 
       - name: Add .env file to repo
-        run: echo "APP_NAME=Laravel\nAPP_ENV=local\nAPP_KEY=\nAPP_DEBUG=true\nAPP_URL=http://${{ secrets.HOST }}\nLOG_CHANNEL=stderr\nDB_CONNECTION=mysql\nDB_HOST=${{ secrets.DB_HOST }}\nDB_PORT=${{ secrets.DB_PORT }}\nDB_DATABASE=${{ secrets.DB_DATABASE }}\nDB_USERNAME=${{ secrets.DB_USERNAME }}\nDB_PASSWORD=::add-mask::${{ steps.database_password.outputs.password }}\nBROADCAST_DRIVER=log\nCACHE_DRIVER=file\nQUEUE_CONNECTION=sync\nSESSION_DRIVER=file\nSESSION_LIFETIME=120\n" > .env
+        run: echo "APP_NAME=Laravel\nAPP_ENV=local\nAPP_KEY=\nAPP_DEBUG=true\nAPP_URL=http://${{ secrets.HOST }}\nLOG_CHANNEL=stderr\nDB_CONNECTION=mysql\nDB_HOST=${{ secrets.DB_HOST }}\nDB_PORT=${{ secrets.DB_PORT }}\nDB_DATABASE=${{ secrets.DB_DATABASE }}\nDB_USERNAME=${{ secrets.DB_USERNAME }}\nDB_PASSWORD=::add-mask::$DB_PASSWORD\nBROADCAST_DRIVER=log\nCACHE_DRIVER=file\nQUEUE_CONNECTION=sync\nSESSION_DRIVER=file\nSESSION_LIFETIME=120\n" > .env
         env:
+          DB_PASSWORD: ${{ steps.database_password.outputs.password }}
           ENV_FILE: ${{ secrets.ENV_FILE }}
         if: ${{ env.ENV_FILE }} == ''
 
