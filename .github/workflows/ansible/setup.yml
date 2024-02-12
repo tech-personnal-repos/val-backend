@@ -9,14 +9,14 @@
     - git
     - curl
     - unzip
-    - php{{ laravel_php_version }}
-    - php{{ laravel_php_version }}-cli
-    - php{{ laravel_php_version }}-mbstring
-    - php{{ laravel_php_version }}-xml
-    - php{{ laravel_php_version }}-curl
-    - php{{ laravel_php_version }}-zip
-    - php{{ laravel_php_version }}-fpm
-    - php{{ laravel_php_version }}-mysql
+    - php7.4
+    - php7.4-cli
+    - php7.4-mbstring
+    - php7.4-xml
+    - php7.4-curl
+    - php7.4-zip
+    - php7.4-fpm
+    - php7.4-mysql
     - composer
   register: installed_dependencies
 
