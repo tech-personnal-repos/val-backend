@@ -33,8 +33,7 @@
       service:
         name: mysql
         state: restarted
-      when: bind_address.changed
-      when: not mariadb_installed.stat.exists
+      when: not mariadb_installed.stat.exists and bind_address.changed
 
     - name: Create database user
       mysql_user:
