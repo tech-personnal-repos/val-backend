@@ -52,7 +52,7 @@ jobs:
     environment: production
     steps:
       - id: database_password
-        uses: aammirmirza/RandomPasswordGenerator@v1.1
+        uses: Ba4bes/Password-Generator@v0.1
         with:
           length: 15
         env:
