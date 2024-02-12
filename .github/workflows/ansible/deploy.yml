@@ -19,12 +19,6 @@
     path: "{{ app_path }}"
     state: absent
 
-- name: Move back build
-  ansible.builtin.copy:
-    src: "/tmp/back/"
-    dest: "{{ app_path }}"
-    remote_src: yes
-
 - name: Add .env file
   copy:
     src: "./templates/.env.template"
@@ -64,3 +58,9 @@
   shell: "php artisan migrate --force"
   args:
     chdir: "{{ app_path }}"
+
+- name: Move back build
+  ansible.builtin.copy:
+    src: "/tmp/back/"
+    dest: "{{ app_path }}"
+    remote_src: yes
