@@ -6,7 +6,6 @@
   apt:
     name: "{{ item }}"
   loop:
-    - git
     - curl
     - unzip
     - php7.4
@@ -17,7 +16,6 @@
     - php7.4-zip
     - php7.4-fpm
     - php7.4-mysql
-    - composer
   register: installed_dependencies
 
 - name: Remove Apache
