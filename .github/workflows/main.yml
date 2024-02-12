@@ -71,7 +71,7 @@ jobs:
         uses: kylejrp/action-nodejs-package-info@v1.2
 
       - name: Zip build folder
-        run: zip -r -j back.zip ./
+        run: zip -r back.zip ./*
 
       - name: Upload File
         uses: svenstaro/upload-release-action@v2
