@@ -64,7 +64,7 @@ jobs:
         with:
           php_version: "7.4"
           version: 1
-          args: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+          args: --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Get package info
         id: package
