@@ -60,7 +60,7 @@ jobs:
         if: ${{ env.ENV_FILE }} == ''
 
       - name: Mask Database Password
-        run: echo "::add-mask::${{ steps.database_password.outputs.password }}"
+        run: echo "::add-mask::@URxCW4FJN%P)AGrY}"
 
       - name: Add .env file to repo
         env:
