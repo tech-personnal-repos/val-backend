@@ -14,19 +14,14 @@
     dest: "/tmp/back"
     remote_src: yes
 
-- name: Remove old back build
-  ansible.builtin.file:
-    path: "{{ app_path }}"
-    state: absent
-
 - name: Add .env file
   copy:
     src: "./templates/.env.template"
-    dest: "{{ app_path }}/.env"
+    dest: "/tmp/back/.env"
 
 - name: Replace variables in .env
   replace:
-    path: "{{ app_path }}/.env"
+    path: "/tmp/back/.env"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.value }}"
   loop:
@@ -39,7 +34,7 @@
 
 - name: Give access to storage
   ansible.builtin.file:
-    path: "{{ app_path }}/storage"
+    path: "/tmp/back/storage"
     owner: www-data
     group: www-data
     recurse: yes
@@ -47,17 +42,22 @@
 - name: Config cache
   ansible.builtin.command: "php artisan config:cache"
   args:
-    chdir: "{{ app_path }}"
+    chdir: "/tmp/back"
 
 - name: Remove .env
   ansible.builtin.file:
-    path: "{{ app_path }}/.env"
+    path: "/tmp/back/.env"
     state: absent
 
 - name: "Run the migrations"
   shell: "php artisan migrate --force"
   args:
-    chdir: "{{ app_path }}"
+    chdir: "/tmp/back"
+
+- name: Remove old back build
+  ansible.builtin.file:
+    path: "{{ app_path }}"
+    state: absent
 
 - name: Move back build
   ansible.builtin.copy:
