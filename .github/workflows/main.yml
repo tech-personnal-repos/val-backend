@@ -76,6 +76,41 @@ jobs:
   #         tag: ${{ steps.package.outputs.version }}
   #         overwrite: true
 
+  setup_database:
+    runs-on: ubuntu-latest
+    # needs: build
+    environment: production
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - name: Get package info
+        id: package
+        uses: kylejrp/action-nodejs-package-info@v1.2
+
+      - name: Deploy Database
+        uses: dawidd6/action-ansible-playbook@v2
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: false
+        with:
+          playbook: database.yml
+          directory: ./.github/workflows/ansible
+          key: ${{ secrets.SSH_KEY }}
+          inventory: |
+            [database]
+            ${{ secrets.DB_HOST }} ansible_user=${{ secrets.USER }}
+          options: |
+            --extra-vars backend_host=${{ secrets.HOST }}
+            --extra-vars db_host=${{ secrets.DB_HOST }}
+            --extra-vars db_port=${{ secrets.DB_PORT }}
+            --extra-vars db_database=${{ secrets.DB_DATABASE }}
+            --extra-vars db_username=${{ secrets.DB_USERNAME }}
+            --extra-vars db_password=${{ secrets.DB_PASSWORD }}
+
   deploy:
     runs-on: ubuntu-latest
     # needs: build
@@ -97,7 +132,7 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: false
         with:
-          playbook: playbook.yml
+          playbook: backend.yml
           directory: ./.github/workflows/ansible
           key: ${{ secrets.SSH_KEY }}
           inventory: |
