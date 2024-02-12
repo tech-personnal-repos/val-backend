@@ -74,4 +74,3 @@
   ansible.builtin.file:
     path: "/tmp/back.zip"
     state: absent
-```
