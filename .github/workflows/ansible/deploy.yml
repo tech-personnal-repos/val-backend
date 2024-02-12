@@ -41,6 +41,7 @@
     - { regexp: '\$DB_PORT', value: "{{ db_port }}" }
     - { regexp: '\$DB_DATABASE', value: "{{ db_database }}" }
     - { regexp: '\$DB_USERNAME', value: "{{ db_username }}" }
+    - { regexp: '\$DB_PASSWORD', value: "{{ db_password }}" }
 
 - name: Give access to storage
   ansible.builtin.file:

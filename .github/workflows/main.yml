@@ -146,3 +146,4 @@ jobs:
             --extra-vars db_port=${{ secrets.DB_PORT }}
             --extra-vars db_database=${{ secrets.DB_DATABASE }}
             --extra-vars db_username=${{ secrets.DB_USERNAME }}
+            --extra-vars db_password=${{ secrets.DB_PASSWORD }}
