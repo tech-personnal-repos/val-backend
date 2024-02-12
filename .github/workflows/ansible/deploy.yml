@@ -42,6 +42,12 @@
     - { regexp: '\$DB_DATABASE', value: "{{ db_database }}" }
     - { regexp: '\$DB_USERNAME', value: "{{ db_username }}" }
 
+- name: Give access to storage
+  ansible.builtin.file:
+    path: "{{ app_path }}/storage"
+    group: www-data
+    owner: www-data
+
 - name: Config cache
   ansible.builtin.command: "php artisan config:cache"
   args:
