@@ -109,5 +109,5 @@ jobs:
             --extra-vars app_path="${{ secrets.APP_PATH }}"
             --extra-vars db_host="${{ secrets.DB_HOST }}"
             --extra-vars db_port="${{ secrets.DB_PORT }}"
-            --extra-vars db_name="${{ secrets.DB_DATABASE }}"
-            --extra-vars db_user="${{ secrets.DB_USERNAME }}"
+            --extra-vars db_databse="${{ secrets.DB_DATABASE }}"
+            --extra-vars db_username="${{ secrets.DB_USERNAME }}"
