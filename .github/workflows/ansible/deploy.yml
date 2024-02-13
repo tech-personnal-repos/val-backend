@@ -47,11 +47,8 @@
   when: app_key == ""
 
 - name: get generated app_key
-  lineinfile:
-    path: /tmp/back/.env
-    regex: "^APP_KEY=(.*)$"
+  shell: "sed -n 's/^APP_KEY=\(.*\)$/\1/p' /tmp/back/.env"
   register: new_app_key
-  when: app_key == ""
 
 - name: Config cache
   ansible.builtin.command: "php artisan config:cache"
@@ -105,7 +102,7 @@
   shell: "gh auth login --with-token < /tmp/github_token"
 
 - name: Add app_key var to github secrets
-  shell: "gh secret set APP_KEY -b {{ new_app_key.match }} -R {{ repository }} -e {{ environnement_name }}"
+  shell: "gh secret set APP_KEY -b {{ new_app_key.stdout }} -R {{ repository }} -e {{ environnement_name }}"
 
 - name: Remove token file
   ansible.builtin.file:
