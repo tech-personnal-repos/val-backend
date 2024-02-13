@@ -46,8 +46,8 @@
     chdir: "/tmp/back"
   when: app_key == ""
 
-- name: get generated app_key
-  command: "grep -o 'APP_KEY=.*' /tmp/back/.env | cut -d'=' -f2-"
+- name: Get generated app_key
+  shell: grep -o 'APP_KEY=.*' /tmp/back/.env | cut -d'=' -f2-
   register: new_app_key
 
 - name: Config cache
@@ -89,9 +89,6 @@
 - name: exit process if app_key is specified
   meta: end_host
   when: app_key != ""
-
-- name: Install github cli
-  apt: "name=gh state=present"
 
 - name: create token file
   copy:
