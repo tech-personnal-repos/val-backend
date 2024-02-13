@@ -29,7 +29,7 @@
       when: not mariadb_installed.stat.exists
 
     - name: List available secrets
-        uri: "https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets"
+        uri: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets
         method: GET
         headers:
             Accept: "application/vnd.github+json"
