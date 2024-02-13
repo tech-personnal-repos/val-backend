@@ -9,61 +9,61 @@ on:
   workflow_dispatch:
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4.1.1
+  # create-release:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #     - uses: actions/checkout@v4.1.1
 
-      - name: Get package info
-        id: package
-        uses: kylejrp/action-nodejs-package-info@v1.2
+  #     - name: Get package info
+  #       id: package
+  #       uses: kylejrp/action-nodejs-package-info@v1.2
 
-      - name: Check Release Existence
-        id: release-existence
-        uses: insightsengineering/release-existence-action@v1.0.0
-        with:
-          release-tag: ${{ steps.package.outputs.version }}
+  #     - name: Check Release Existence
+  #       id: release-existence
+  #       uses: insightsengineering/release-existence-action@v1.0.0
+  #       with:
+  #         release-tag: ${{ steps.package.outputs.version }}
 
-      - name: Create Release
-        if: steps.release-existence.outputs.release-exists == 'false'
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.package.outputs.version }}
-          release_name: Release ${{ steps.package.outputs.version }}
-          body: |
-            ${{ github.event.head_commit.message }}
-          draft: false
-          prerelease: false
+  #     - name: Create Release
+  #       if: steps.release-existence.outputs.release-exists == 'false'
+  #       uses: actions/create-release@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         tag_name: ${{ steps.package.outputs.version }}
+  #         release_name: Release ${{ steps.package.outputs.version }}
+  #         body: |
+  #           ${{ github.event.head_commit.message }}
+  #         draft: false
+  #         prerelease: false
 
-  setup_database:
-    runs-on: ubuntu-latest
-    environment: production
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4.1.1
+  # setup_database:
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #     - uses: actions/checkout@v4.1.1
 
-      - name: Deploy Database
-        uses: dawidd6/action-ansible-playbook@v2
-        env:
-          ANSIBLE_HOST_KEY_CHECKING: false
-        with:
-          playbook: database.yml
-          directory: ./.github/workflows/ansible
-          key: ${{ secrets.SSH_KEY }}
-          inventory: |
-            [database]
-            ${{ secrets.DB_HOST }} ansible_user=${{ secrets.USER }}
-          options: |
-            --extra-vars repository=${{ github.repository }}
-            --extra-vars environnement_name=production
-            --extra-vars github_token=${{ secrets.TEST }}
-            --extra-vars backend_host=${{ secrets.HOST }}
-            --extra-vars db_database=${{ secrets.DB_DATABASE }}
+  #     - name: Deploy Database
+  #       uses: dawidd6/action-ansible-playbook@v2
+  #       env:
+  #         ANSIBLE_HOST_KEY_CHECKING: false
+  #       with:
+  #         playbook: database.yml
+  #         directory: ./.github/workflows/ansible
+  #         key: ${{ secrets.SSH_KEY }}
+  #         inventory: |
+  #           [database]
+  #           ${{ secrets.DB_HOST }} ansible_user=${{ secrets.USER }}
+  #         options: |
+  #           --extra-vars repository=${{ github.repository }}
+  #           --extra-vars environnement_name=production
+  #           --extra-vars github_token=${{ secrets.TEST }}
+  #           --extra-vars backend_host=${{ secrets.HOST }}
+  #           --extra-vars db_database=${{ secrets.DB_DATABASE }}
 
   # build:
   #   runs-on: ubuntu-latest

@@ -47,7 +47,7 @@
   when: app_key == ""
 
 - name: get generated app_key
-  command: "grep -o 'APP_KEY\=.*' /tmp/back/.env | cut -d'=' -f2-"
+  command: "grep -o 'APP_KEY=.*' /tmp/back/.env | cut -d'=' -f2-"
   register: new_app_key
 
 - name: Config cache
