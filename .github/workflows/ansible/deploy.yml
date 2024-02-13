@@ -25,12 +25,24 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.value }}"
   loop:
+    - { regexp: '\$APP_ENV', value: "{{ app_key }}" }
     - { regexp: '\$HOST', value: "{{ host }}" }
     - { regexp: '\$DB_HOST', value: "{{ db_host }}" }
     - { regexp: '\$DB_PORT', value: "{{ db_port }}" }
     - { regexp: '\$DB_DATABASE', value: "{{ db_database }}" }
     - { regexp: '\$DB_USERNAME', value: "{{ db_username }}" }
     - { regexp: '\$DB_PASSWORD', value: "{{ db_password }}" }
+
+- name: Generate app_key if not defined
+  ansible.builtin.command: "php artisan generate:key"
+  args:
+    chdir: "/tmp/back"
+
+- name: get generated app_key
+  ansible.builtin.lineinfile:
+    path: /tmp/back/.env
+    regex: '^APP_KEY=(.*)$'
+    register: new_app_key
 
 - name: Give access to storage
   ansible.builtin.file:
@@ -74,3 +86,27 @@
   ansible.builtin.file:
     path: "/tmp/back.zip"
     state: absent
+
+- name: exit process if app_key is specified
+  meta: end_host
+  when: app_key == ""
+
+- name: Install github cli
+  apt: "name=gh state=present"
+
+- name: create token file
+  copy:
+    content: "{{ github_token }}"
+    dest: /tmp/github_token
+
+- name: Login to github cli
+  shell: "gh auth login --with-token < /tmp/github_token"
+
+- name: Add app_key var to github secrets
+  shell: "gh secret set APP_KEY -b {{ new_app_key.stdout }} -R {{ repository }} -e {{ environnement_name }}"
+
+- name: Remove token file
+  ansible.builtin.file:
+    path: /tmp/github_token
+    state: absent
+```

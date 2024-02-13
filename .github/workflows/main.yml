@@ -61,9 +61,9 @@ jobs:
           options: |
             --extra-vars repository=${{ github.repository }}
             --extra-vars environnement_name=production
+            --extra-vars github_token=${{ secrets.TEST }}
             --extra-vars backend_host=${{ secrets.HOST }}
             --extra-vars db_database=${{ secrets.DB_DATABASE }}
-            --extra-vars github_token=${{ secrets.TEST }}
 
   # build:
   #   runs-on: ubuntu-latest
@@ -96,35 +96,38 @@ jobs:
   #         tag: ${{ steps.package.outputs.version }}
   #         overwrite: true
 
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: [build, setup_database]
-  #   environment: production
-  #   steps:
-  #     - uses: actions/checkout@v4.1.1
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [setup_database]
+    environment: production
+    steps:
+      - uses: actions/checkout@v4.1.1
 
-  #     - name: Get package info
-  #       id: package
-  #       uses: kylejrp/action-nodejs-package-info@v1.2
+      - name: Get package info
+        id: package
+        uses: kylejrp/action-nodejs-package-info@v1.2
 
-  #     - name: Deploy Backend
-  #       uses: dawidd6/action-ansible-playbook@v2
-  #       env:
-  #         ANSIBLE_HOST_KEY_CHECKING: false
-  #       with:
-  #         playbook: backend.yml
-  #         directory: ./.github/workflows/ansible
-  #         key: ${{ secrets.SSH_KEY }}
-  #         inventory: |
-  #           [backend]
-  #           ${{ secrets.HOST }} ansible_user=${{ secrets.USER }}
-  #         options: |
-  #           --extra-vars download_url=https://github.com/tech-personnal-repos/val-backend/releases/download/${{ steps.package.outputs.version }}/back.zip
-  #           --extra-vars host=${{ secrets.HOST }}
-  #           --extra-vars app_path=${{ secrets.APP_PATH }}
-  #           --extra-vars app_key=${{ secrets.APP_KEY }}
-  #           --extra-vars db_host=${{ secrets.DB_HOST }}
-  #           --extra-vars db_port=${{ secrets.DB_PORT }}
-  #           --extra-vars db_database=${{ secrets.DB_DATABASE }}
-  #           --extra-vars db_username=${{ secrets.DB_USERNAME }}
-  #           --extra-vars db_password=${{ secrets.DB_PASSWORD }}
+      - name: Deploy Backend
+        uses: dawidd6/action-ansible-playbook@v2
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: false
+        with:
+          playbook: backend.yml
+          directory: ./.github/workflows/ansible
+          key: ${{ secrets.SSH_KEY }}
+          inventory: |
+            [backend]
+            ${{ secrets.HOST }} ansible_user=${{ secrets.USER }}
+          options: |
+            --extra-vars repository=${{ github.repository }}
+            --extra-vars environnement_name=production
+            --extra-vars github_token=${{ secrets.TEST }}
+            --extra-vars app_key=${{ secrets.APP_KEY }}
+            --extra-vars download_url=https://github.com/tech-personnal-repos/val-backend/releases/download/${{ steps.package.outputs.version }}/back.zip
+            --extra-vars host=${{ secrets.HOST }}
+            --extra-vars app_path=${{ secrets.APP_PATH }}
+            --extra-vars db_host=${{ secrets.DB_HOST }}
+            --extra-vars db_port=${{ secrets.DB_PORT }}
+            --extra-vars db_database=${{ secrets.DB_DATABASE }}
+            --extra-vars db_username=${{ secrets.DB_USERNAME }}
+            --extra-vars db_password=${{ secrets.DB_PASSWORD }}
