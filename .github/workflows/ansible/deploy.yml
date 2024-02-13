@@ -89,7 +89,7 @@
 
 - name: exit process if app_key is specified
   meta: end_host
-  when: app_key == ""
+  when: app_key != ""
 
 - name: Install github cli
   apt: "name=gh state=present"
