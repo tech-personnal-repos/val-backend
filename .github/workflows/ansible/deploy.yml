@@ -40,7 +40,7 @@
     group: www-data
     recurse: yes
 
- - name: Generate app_key if not defined
+- name: Generate app_key if not defined
   ansible.builtin.command: "php artisan key:generate"
   args:
     chdir: "/tmp/back"
