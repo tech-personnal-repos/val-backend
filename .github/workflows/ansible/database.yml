@@ -29,11 +29,12 @@
       when: not mariadb_installed.stat.exists
 
     - name: List available secrets
-        uri: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets
+      uri:
+        url: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets
         method: GET
         headers:
-            Accept: "application/vnd.github+json"
-            Authorization: "Bearer {{ github_token }}"
+          Accept: "application/vnd.github+json"
+          Authorization: "Bearer {{ github_token }}"
         register: secrets
 
     - name: show github secrets
@@ -41,12 +42,13 @@
         var: secrets
 
     - name: Add database var to github secrets
-      uri: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets/{{ item.name }}
-      method: PUT
-      headers:
-        Authorization: "token {{ github_token }}"
-        Accept: "application/vnd.github.v3+json"
-      body: '{"encrypted_value": "{{ item.value }}", "key_id": "{{ key_id }}"}'
+      uri:
+        url: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets/{{ item.name }}
+        method: PUT
+        headers:
+          Authorization: "token {{ github_token }}"
+          Accept: "application/vnd.github.v3+json"
+        body: '{"encrypted_value": "{{ item.value }}", "key_id": "{{ key_id }}"}'
       loop:
         - { name: DB_PASSWORD, value: "{{ db_password.stdout }}" }
         - { name: DB_USERNAME, value: "{{ db_username.stdout }}" }
