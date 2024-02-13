@@ -13,9 +13,6 @@ jobs:
   #   runs-on: ubuntu-latest
   #   permissions:
   #     contents: write
-  #     packages: write
-  #     pull-requests: write
-  #     issues: write
   #   steps:
   #     - uses: actions/checkout@v4.1.1
 
@@ -47,9 +44,6 @@ jobs:
     environment: production
     permissions:
       contents: write
-      packages: write
-      pull-requests: write
-      issues: write
     steps:
       - uses: actions/checkout@v4.1.1
 
@@ -77,9 +71,6 @@ jobs:
   #   environment: production
   #   permissions:
   #     contents: write
-  #     packages: write
-  #     pull-requests: write
-  #     issues: write
   #   steps:
   #     - uses: actions/checkout@v4.1.1
 
@@ -109,11 +100,6 @@ jobs:
   #   runs-on: ubuntu-latest
   #   needs: [build, setup_database]
   #   environment: production
-  #   permissions:
-  #     contents: write
-  #     packages: write
-  #     pull-requests: write
-  #     issues: write
   #   steps:
   #     - uses: actions/checkout@v4.1.1
 
