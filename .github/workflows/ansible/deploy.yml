@@ -48,7 +48,7 @@
 
 - name: get generated app_key
   lineinfile:
-    path: /path/to/.env
+    path: /tmp/back/.env
     regex: "^APP_KEY=(.*)$"
   register: new_app_key
   when: app_key == ""
