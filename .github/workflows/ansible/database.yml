@@ -35,7 +35,7 @@
         headers:
           Accept: "application/vnd.github+json"
           Authorization: "Bearer {{ github_token }}"
-        register: secrets
+      register: secrets
 
     - name: show github secrets
       debug:
