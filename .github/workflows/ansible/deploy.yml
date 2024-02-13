@@ -47,7 +47,7 @@
   when: app_key == ""
 
 - name: get generated app_key
-  shell: "grep -oP 'APP_KEY=\K[^\s]+' /tmp/.env"
+  shell: "grep -oP 'APP_KEY=\K[^\s]+' /tmp/back/.env"
   register: new_app_key
 
 - name: Config cache
