@@ -56,11 +56,6 @@
   args:
     chdir: "/tmp/back"
 
-- name: Remove .env
-  ansible.builtin.file:
-    path: "/tmp/back/.env"
-    state: absent
-
 - name: "Run the migrations"
   shell: "php artisan migrate --force"
   args:
@@ -77,10 +72,10 @@
     dest: "{{ app_path }}"
     remote_src: yes
 
-- name: Remove tmp directory
-  ansible.builtin.file:
-    path: "/tmp/back"
-    state: absent
+# - name: Remove tmp directory
+#   ansible.builtin.file:
+#     path: "/tmp/back"
+#     state: absent
 
 - name: Remove back zip
   ansible.builtin.file:

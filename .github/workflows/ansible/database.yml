@@ -47,14 +47,6 @@
           }
       no_log: true
 
-    - name: List secrets
-      shell: "gh secret list -R {{ repository }} -e {{ environnement_name }}"
-      register: secrets
-
-    - name: Debug secrets
-      debug:
-        var: secrets.stdout
-
     - name: remove token file
       file:
         path: /tmp/github_token
