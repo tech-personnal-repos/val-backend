@@ -53,15 +53,15 @@
         - { name: DB_DATABASE, value: "{{ db_database }}" }
 
     - name: List secrets
-        shell: "gh secret list -R tech-personnal-repos/val-backend -e production"
-        register: secrets
+      shell: "gh secret list -R tech-personnal-repos/val-backend -e production"
+      register: secrets
 
     - name: Debug secrets
-        debug:
-            var: secrets.stdout
+      debug:
+        var: secrets.stdout
 
     - name: logout from github cli
-        shell: "gh auth logout"
+      shell: "gh auth logout"
 
     - name: remove token file
       file:
