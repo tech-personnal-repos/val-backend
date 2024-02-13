@@ -30,7 +30,7 @@
     - name: Generate db name if not given
       shell: "openssl rand -base64 30"
       register: db_name
-      when: '{{ db_database }} == ""'
+      when: db_database == ""'
 
     - name: set database name if not given
       set_fact:
