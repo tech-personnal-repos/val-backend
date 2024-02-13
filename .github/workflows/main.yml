@@ -47,12 +47,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
 
-      - name: debug
-        run: echo ${{ github.repository_owner }}
-
-      - name: debug
-        run: echo ${{ github.repository }}
-
       - name: Deploy Database
         uses: dawidd6/action-ansible-playbook@v2
         env:
@@ -65,11 +59,11 @@ jobs:
             [database]
             ${{ secrets.DB_HOST }} ansible_user=${{ secrets.USER }}
           options: |
-            --extra-vars repository_id=${{ github.repository_id }}
+            --extra-vars repository=${{ github.repository }}
             --extra-vars environnement_name=production
             --extra-vars backend_host=${{ secrets.HOST }}
             --extra-vars db_database=${{ secrets.DB_DATABASE }}
-            --extra-vars github_token=${{ secrets.GITHUB_TOKEN }}
+            --extra-vars github_token=${{ secrets.TEST }}
 
   # build:
   #   runs-on: ubuntu-latest
