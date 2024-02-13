@@ -16,6 +16,9 @@
     - name: Install Mariadb server
       apt: name=mariadb-server state=present
 
+    - name: Install github client
+      apt: name=gh state=present
+
     - name: Generate db username
       shell: "openssl rand -base64 30"
       register: db_username
