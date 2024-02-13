@@ -5,89 +5,100 @@
     - name: Update apt cache
       apt: update_cache=yes
 
-    - name: Check if mariadb is installed
-      stat: path=/usr/sbin/mysqld
-      register: mariadb_installed
+    - name: Install github cli
+        apt: name=gh state=present
 
-    - name: Install Mariadb server
-      apt: name=mariadb-server state=present
-      when: not mariadb_installed.stat.exists
+    # - name: Check if mariadb is installed
+    #   stat: path=/usr/sbin/mysqld
+    #   register: mariadb_installed
 
-    - name: Generate db password
-      shell: "openssl rand -base64 30"
-      register: db_password
-      when: not mariadb_installed.stat.exists
+    # - name: Exit if mariadb is installed
+    #   meta: end_host
+    #   when: mariadb_installed.stat.exists
 
-    - name: Generate db name if not given
-      shell: "openssl rand -base64 30"
-      register: db_name
-      when: not mariadb_installed.stat.exists and {{ db_database }} == ""
+    # - name: Install Mariadb server
+    #   apt: name=mariadb-server state=present
 
     - name: Generate db username
       shell: "openssl rand -base64 30"
       register: db_username
-      when: not mariadb_installed.stat.exists
 
-    - name: List available secrets
-      ansible.builtin.uri:
-        url: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets
-        method: GET
-        headers:
-          Accept: "application/vnd.github+json"
-          Authorization: "Bearer {{ github_token }}"
-      register: secrets
+    - name: Generate db password
+      shell: "openssl rand -base64 30"
+      register: db_password
 
-    - name: show github secrets
-      debug:
-        var: secrets
+    - name: Generate db name if not given
+      shell: "openssl rand -base64 30"
+      register: db_name
+      when: '{{ db_database }} == ""'
+
+    - name: set database name
+      set_fact:
+        db_database: "{{ db_name.stdout }}"
+      when: '{{ db_database }} == ""'
+
+    - name: create token file
+      copy:
+        content: "{{ github_token }}"
+        dest: /tmp/github_token
+
+    - name: Login to github cli
+        shell: "gh auth login --with-token < /tmp/github_token"
+        args:
+            creates: /root/.config/gh/hosts.yml
 
     - name: Add database var to github secrets
-      ansible.builtin.uri:
-        url: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets/{{ item.name }}
-        method: PUT
-        headers:
-          Authorization: "token {{ github_token }}"
-          Accept: "application/vnd.github.v3+json"
-        body: '{"encrypted_value": "{{ item.value }}", "key_id": "{{ key_id }}"}'
+      shell: "gh secret set {{ item.name }} {{ item.value }}"
       loop:
         - { name: DB_PASSWORD, value: "{{ db_password.stdout }}" }
         - { name: DB_USERNAME, value: "{{ db_username.stdout }}" }
-        - { name: DB_DATABASE, value: "{{ db_name.stdout }}" }
-      when: not mariadb_installed.stat.exists
+        - { name: DB_DATABASE, value: "{{ db_database }}" }
+
+    - name: List secrets
+        shell: "gh secret list"
+        register: secrets
+
+    - name: Debug secrets
+        debug:
+            var: secrets.stdout
+
+    - name: logout from github cli
+        shell: "gh auth logout"
+
+    - name: remove token file
+        file:
+            path: /tmp/github_token
+            state: absent
 
     - name: Enable mariadb service
       service: name=mariadb enabled=yes state=started
 
     - name: Install python3 mysql connector
       apt: name=python3-mysqldb state=present
-      when: not mariadb_installed.stat.exists
 
-    - name: Set bind-address in my.cnf
-      lineinfile:
-        path: /etc/mysql/mariadb.conf.d/50-server.cnf
-        regexp: '^bind-address\s*='
-        line: "bind-address = 0.0.0.0"
-        state: present
-      register: bind_address
-      when: not mariadb_installed.stat.exists
+    # - name: Set bind-address in my.cnf
+    #   lineinfile:
+    #     path: /etc/mysql/mariadb.conf.d/50-server.cnf
+    #     regexp: '^bind-address\s*='
+    #     line: "bind-address = 0.0.0.0"
+    #     state: present
+    #   register: bind_address
 
-    - name: Restart mysql service
-      service:
-        name: mysql
-        state: restarted
-      when: not mariadb_installed.stat.exists and bind_address.changed
+    # - name: Restart mysql service
+    #   service:
+    #     name: mysql
+    #     state: restarted
+    #   when: bind_address.changed
 
-    - name: Create database user
-      mysql_user:
-        name: "{{ db_username }}"
-        password: "{{ db_password }}"
-        priv: "*.*:ALL,GRANT"
-        host: "{{ backend_host }}"
-        state: present
-      when: not mariadb_installed.stat.exists
+    # - name: Create database user
+    #   mysql_user:
+    #     name: "{{ db_username.stdout }}"
+    #     password: "{{ db_password.stdout }}"
+    #     priv: "*.*:ALL,GRANT"
+    #     host: "{{ backend_host }}"
+    #     state: present
 
-    - name: Create database
-      mysql_db:
-        name: "nsa"
-        state: present
-      when: not mariadb_installed.stat.exists
+    # - name: Create database
+    #   mysql_db:
+    #     name: "{{ db_database }}"
+    #     state: present
