@@ -5,16 +5,13 @@
     - name: Update apt cache
       apt: update_cache=yes
 
-    - name: Check if mariadb is installed
-      stat: path=/usr/sbin/mysqld
+    - name: Install Mariadb server
+      apt: name=mariadb-server state=present
       register: mariadb_installed
 
     - name: Exit if mariadb is installed
       meta: end_host
-      when: mariadb_installed.stat.exists
-
-    - name: Install Mariadb server
-      apt: name=mariadb-server state=present
+      when: mariadb_installed.changed
 
     - name: Install github client
       apt: name=gh state=present
