@@ -48,8 +48,8 @@
 - name: get generated app_key
   ansible.builtin.lineinfile:
     path: /tmp/back/.env
-    regexp: "^APP_KEY=(.*)$"
-    register: new_app_key
+    regex: "^APP_KEY=(.*)$"
+  register: new_app_key
 
 - name: Config cache
   ansible.builtin.command: "php artisan config:cache"
