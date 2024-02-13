@@ -46,9 +46,7 @@
     chdir: "/tmp/back"
 
 - name: get generated app_key
-  ansible.builtin.lineinfile:
-    path: /tmp/back/.env
-    regex: "^APP_KEY=(.*)$"
+  shell: "grep '^APP_KEY=' /path/to/.env | cut -d '=' -f 2"
   register: new_app_key
 
 - name: Config cache
