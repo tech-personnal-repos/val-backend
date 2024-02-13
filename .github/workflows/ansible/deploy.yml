@@ -25,7 +25,7 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.value }}"
   loop:
-    - { regexp: '\$APP_ENV', value: "{{ app_key }}" }
+    - { regexp: '\$APP_KEY', value: "{{ app_key }}" }
     - { regexp: '\$HOST', value: "{{ host }}" }
     - { regexp: '\$DB_HOST', value: "{{ db_host }}" }
     - { regexp: '\$DB_PORT', value: "{{ db_port }}" }
@@ -44,10 +44,12 @@
   ansible.builtin.command: "php artisan key:generate"
   args:
     chdir: "/tmp/back"
+  when: app_key == ""
 
 - name: get generated app_key
   shell: "grep '^APP_KEY=' /path/to/.env | cut -d '=' -f 2"
   register: new_app_key
+  when: app_key == ""
 
 - name: Config cache
   ansible.builtin.command: "php artisan config:cache"
