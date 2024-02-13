@@ -51,6 +51,8 @@ jobs:
       pull-requests: write
       issues: write
     steps:
+      - uses: actions/checkout@v4.1.1
+
       - name: Deploy Database
         uses: dawidd6/action-ansible-playbook@v2
         env:
