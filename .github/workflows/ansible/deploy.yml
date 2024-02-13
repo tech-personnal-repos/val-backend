@@ -48,7 +48,7 @@
 - name: get generated app_key
   ansible.builtin.lineinfile:
     path: /tmp/back/.env
-    regex: "^APP_KEY=(.*)$"
+    regexp: "^APP_KEY=(.*)$"
     register: new_app_key
 
 - name: Config cache
