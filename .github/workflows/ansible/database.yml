@@ -32,10 +32,10 @@
       register: db_name
       when: '{{ db_database }} == ""'
 
-    - name: set database name
+    - name: set database name if not given
       set_fact:
         db_database: "{{ db_name.stdout }}"
-      when: '{{ db_database }} == ""'
+      when: db_database == ""
 
     - name: create token file
       copy:
