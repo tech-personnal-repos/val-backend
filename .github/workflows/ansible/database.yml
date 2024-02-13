@@ -5,19 +5,16 @@
     - name: Update apt cache
       apt: update_cache=yes
 
-    - name: Install github cli
-      apt: name=gh state=present
+    - name: Check if mariadb is installed
+      stat: path=/usr/sbin/mysqld
+      register: mariadb_installed
 
-    # - name: Check if mariadb is installed
-    #   stat: path=/usr/sbin/mysqld
-    #   register: mariadb_installed
+    - name: Exit if mariadb is installed
+      meta: end_host
+      when: mariadb_installed.stat.exists
 
-    # - name: Exit if mariadb is installed
-    #   meta: end_host
-    #   when: mariadb_installed.stat.exists
-
-    # - name: Install Mariadb server
-    #   apt: name=mariadb-server state=present
+    - name: Install Mariadb server
+      apt: name=mariadb-server state=present
 
     - name: Generate db username
       shell: "openssl rand -base64 30"
@@ -63,35 +60,35 @@
         path: /tmp/github_token
         state: absent
 
-    # - name: Enable mariadb service
-    #   service: name=mariadb enabled=yes state=started
+    - name: Enable mariadb service
+      service: name=mariadb enabled=yes state=started
 
-    # - name: Install python3 mysql connector
-    #   apt: name=python3-mysqldb state=present
+    - name: Install python3 mysql connector
+      apt: name=python3-mysqldb state=present
 
-    # - name: Set bind-address in my.cnf
-    #   lineinfile:
-    #     path: /etc/mysql/mariadb.conf.d/50-server.cnf
-    #     regexp: '^bind-address\s*='
-    #     line: "bind-address = 0.0.0.0"
-    #     state: present
-    #   register: bind_address
+    - name: Set bind-address in my.cnf
+      lineinfile:
+        path: /etc/mysql/mariadb.conf.d/50-server.cnf
+        regexp: '^bind-address\s*='
+        line: "bind-address = 0.0.0.0"
+        state: present
+      register: bind_address
 
-    # - name: Restart mysql service
-    #   service:
-    #     name: mysql
-    #     state: restarted
-    #   when: bind_address.changed
+    - name: Restart mysql service
+      service:
+        name: mysql
+        state: restarted
+      when: bind_address.changed
 
-    # - name: Create database user
-    #   mysql_user:
-    #     name: "{{ db_username.stdout }}"
-    #     password: "{{ db_password.stdout }}"
-    #     priv: "*.*:ALL,GRANT"
-    #     host: "{{ backend_host }}"
-    #     state: present
+    - name: Create database user
+      mysql_user:
+        name: "{{ db_username.stdout }}"
+        password: "{{ db_password.stdout }}"
+        priv: "*.*:ALL,GRANT"
+        host: "{{ backend_host }}"
+        state: present
 
-    # - name: Create database
-    #   mysql_db:
-    #     name: "{{ db_database }}"
-    #     state: present
+    - name: Create database
+      mysql_db:
+        name: "{{ (db_database == '') | ternary(db_name.stdout, db_database) }}"
+        state: present
