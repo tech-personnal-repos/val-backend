@@ -33,8 +33,15 @@
     - { regexp: '\$DB_USERNAME', value: "{{ db_username }}" }
     - { regexp: '\$DB_PASSWORD', value: "{{ db_password }}" }
 
-- name: Generate app_key if not defined
-  shell: "php artisan generate:key"
+- name: Give access to storage
+  ansible.builtin.file:
+    path: "/tmp/back/storage"
+    owner: www-data
+    group: www-data
+    recurse: yes
+
+ - name: Generate app_key if not defined
+  ansible.builtin.command: "php artisan key:generate"
   args:
     chdir: "/tmp/back"
 
@@ -43,13 +50,6 @@
     path: /tmp/back/.env
     regex: "^APP_KEY=(.*)$"
     register: new_app_key
-
-- name: Give access to storage
-  ansible.builtin.file:
-    path: "/tmp/back/storage"
-    owner: www-data
-    group: www-data
-    recurse: yes
 
 - name: Config cache
   ansible.builtin.command: "php artisan config:cache"
