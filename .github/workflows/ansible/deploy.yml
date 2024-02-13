@@ -41,7 +41,7 @@
 - name: get generated app_key
   ansible.builtin.lineinfile:
     path: /tmp/back/.env
-    regex: '^APP_KEY=(.*)$'
+    regex: "^APP_KEY=(.*)$"
     register: new_app_key
 
 - name: Give access to storage
@@ -109,4 +109,3 @@
   ansible.builtin.file:
     path: /tmp/github_token
     state: absent
-```
