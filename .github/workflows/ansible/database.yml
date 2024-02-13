@@ -29,7 +29,7 @@
       when: not mariadb_installed.stat.exists
 
     - name: List available secrets
-        url: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets
+        uri: "https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets"
         method: GET
         headers:
             Accept: "application/vnd.github+json"
@@ -41,7 +41,7 @@
         var: secrets
 
     - name: Add database var to github secrets
-      url: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets/{{ item.name }}
+      uri: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets/{{ item.name }}
       method: PUT
       headers:
         Authorization: "token {{ github_token }}"
