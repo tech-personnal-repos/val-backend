@@ -43,7 +43,7 @@
         dest: /tmp/github_token
 
     - name: Login to github cli
-        shell: "gh auth login --with-token < /tmp/github_token"
+      shell: "gh auth login --with-token < /tmp/github_token"
 
     - name: Add database var to github secrets
       shell: "gh secret set {{ item.name }} -b {{ item.value }}" -R tech-personnal-repos/val-backend -e production
