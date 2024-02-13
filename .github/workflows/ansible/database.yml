@@ -13,6 +13,46 @@
       apt: name=mariadb-server state=present
       when: not mariadb_installed.stat.exists
 
+    - name: Generate db password
+      shell: "openssl rand -base64 30"
+      register: db_password
+      when: not mariadb_installed.stat.exists
+
+    - name: Generate db name if not given
+      shell: "openssl rand -base64 30"
+      register: db_name
+      when: not mariadb_installed.stat.exists and {{ db_database }} == ""
+
+    - name: Generate db username
+      shell: "openssl rand -base64 30"
+      register: db_username
+      when: not mariadb_installed.stat.exists
+
+    - name: List available secrets
+        url: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets
+        method: GET
+        headers:
+            Accept: "application/vnd.github+json"
+            Authorization: "Bearer {{ github_token }}"
+        register: secrets
+
+    - name: show github secrets
+      debug:
+        var: secrets
+
+    - name: Add database var to github secrets
+      url: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets/{{ item.name }}
+      method: PUT
+      headers:
+        Authorization: "token {{ github_token }}"
+        Accept: "application/vnd.github.v3+json"
+      body: '{"encrypted_value": "{{ item.value }}", "key_id": "{{ key_id }}"}'
+      loop:
+        - { name: DB_PASSWORD, value: "{{ db_password.stdout }}" }
+        - { name: DB_USERNAME, value: "{{ db_username.stdout }}" }
+        - { name: DB_DATABASE, value: "{{ db_name.stdout }}" }
+      when: not mariadb_installed.stat.exists
+
     - name: Enable mariadb service
       service: name=mariadb enabled=yes state=started
 
