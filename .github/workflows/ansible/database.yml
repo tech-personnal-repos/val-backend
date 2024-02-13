@@ -29,7 +29,7 @@
       when: not mariadb_installed.stat.exists
 
     - name: List available secrets
-      uri:
+      ansible.builtin.uri:
         url: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets
         method: GET
         headers:
@@ -42,7 +42,7 @@
         var: secrets
 
     - name: Add database var to github secrets
-      uri:
+      ansible.builtin.uri:
         url: https://api.github.com/repositories/{{ repository_id }}/environments/{{ environnement_name }}/secrets/{{ item.name }}
         method: PUT
         headers:
