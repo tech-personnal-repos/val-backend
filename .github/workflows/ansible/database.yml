@@ -46,7 +46,7 @@
         - { name: DB_USERNAME, value: "{{ db_username.stdout }}" }
         - {
             name: DB_DATABASE,
-            value: "{{ db_database == '' | ternary(db_name.stdout, db_database) }}",
+            value: "{{ (db_database == '') | ternary(db_name.stdout, db_database) }}",
           }
 
     - name: List secrets
@@ -56,9 +56,6 @@
     - name: Debug secrets
       debug:
         var: secrets.stdout
-
-    - name: logout from github cli
-      shell: "gh auth logout"
 
     - name: remove token file
       file:
