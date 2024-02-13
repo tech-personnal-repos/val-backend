@@ -44,18 +44,16 @@
 
     - name: Login to github cli
         shell: "gh auth login --with-token < /tmp/github_token"
-        args:
-            creates: /root/.config/gh/hosts.yml
 
     - name: Add database var to github secrets
-      shell: "gh secret set {{ item.name }} {{ item.value }}"
+      shell: "gh secret set {{ item.name }} -b {{ item.value }}" -R tech-personnal-repos/val-backend -e production
       loop:
         - { name: DB_PASSWORD, value: "{{ db_password.stdout }}" }
         - { name: DB_USERNAME, value: "{{ db_username.stdout }}" }
         - { name: DB_DATABASE, value: "{{ db_database }}" }
 
     - name: List secrets
-        shell: "gh secret list"
+        shell: "gh secret list -R tech-personnal-repos/val-backend -e production"
         register: secrets
 
     - name: Debug secrets
