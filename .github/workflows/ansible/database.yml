@@ -30,12 +30,6 @@
     - name: Generate db name if not given
       shell: "openssl rand -base64 30"
       register: db_name
-      when: db_database == ""
-
-    - name: set database name if not given
-      set_fact:
-        db_database: "{{ db_name.stdout }}"
-      when: db_name.stdout != ""
 
     - name: create token file
       copy:
@@ -50,7 +44,7 @@
       loop:
         - { name: DB_PASSWORD, value: "{{ db_password.stdout }}" }
         - { name: DB_USERNAME, value: "{{ db_username.stdout }}" }
-        - { name: DB_DATABASE, value: "{{ db_database }}" }
+        - { name: DB_DATABASE, value: "{{ db_database == "" | ternary(db_name.stdout, db_database) }}" }
 
     - name: List secrets
       shell: "gh secret list -R tech-personnal-repos/val-backend -e production"
