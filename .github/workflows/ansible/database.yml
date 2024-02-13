@@ -6,7 +6,7 @@
       apt: update_cache=yes
 
     - name: Install github cli
-        apt: name=gh state=present
+      apt: name=gh state=present
 
     # - name: Check if mariadb is installed
     #   stat: path=/usr/sbin/mysqld
