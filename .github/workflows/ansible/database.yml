@@ -35,7 +35,7 @@
     - name: set database name if not given
       set_fact:
         db_database: "{{ db_name.stdout }}"
-      when: db_database == ""
+      when: db_name.stdout != ""
 
     - name: create token file
       copy:
